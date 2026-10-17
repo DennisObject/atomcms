@@ -20,12 +20,16 @@ class ToolController extends Controller
 {
     public function launch(Request $request, ClientLaunchService $client): JsonResponse
     {
-        $validated = $request->validate(['client' => ['sometimes', 'in:nitro,flash']]);
+        $validated = $request->validate(['client' => ['sometimes', 'in:nitro,flash,air']]);
         $type = $validated['client'] ?? 'nitro';
         abort_if($type === 'flash' && ! config('habbo.client.flash_enabled'), 404);
+        abort_if($type === 'air' && ! config('habbo.client.air_enabled'), 404);
         $sso = $client->ticket(AuthenticatedUser::from($request), $request->ip() ?: 'unknown');
         $data = ['client' => $type, 'sso' => $sso];
-        if ($type === 'nitro') {
+        if ($type === 'air') {
+            // An AIR launcher set to this hotel's domain takes the ticket from this link.
+            $data['url'] = 'habbo://hab?' . http_build_query(['server' => parse_url((string) config('app.url'), PHP_URL_HOST), 'token' => $sso], '', '&', PHP_QUERY_RFC3986);
+        } elseif ($type === 'nitro') {
             $data['url'] = rtrim(url((string) setting('nitro_path', config('habbo.client.nitro_path'))), '/') . '/index.html?sso=' . rawurlencode($sso);
         } else {
             $base = rtrim(url((string) config('habbo.flash.swf_base_path')), '/');

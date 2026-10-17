@@ -2776,7 +2776,7 @@
             }
           }
         },
-        "description": "Issues a fresh SSO ticket after access checks. Do not prefetch, persist, log, or cache the returned URL/token. Flash requires server configuration.",
+        "description": "Issues a fresh SSO ticket after access checks. Do not prefetch, persist, log, or cache the returned URL/token. Flash and AIR require server configuration. AIR returns a habbo://hab?server=<host>&token=<sso> link for a launcher set to this hotel.",
         "requestBody": {
           "required": true,
           "content": {
@@ -2788,7 +2788,8 @@
                     "type": "string",
                     "enum": [
                       "nitro",
-                      "flash"
+                      "flash",
+                      "air"
                     ]
                   }
                 },
@@ -4913,10 +4914,14 @@
             "properties": {
               "flash_enabled": {
                 "type": "boolean"
+              },
+              "air_enabled": {
+                "type": "boolean"
               }
             },
             "required": [
-              "flash_enabled"
+              "flash_enabled",
+              "air_enabled"
             ],
             "additionalProperties": false
           },
@@ -6870,7 +6875,8 @@
             "type": "string",
             "enum": [
               "nitro",
-              "flash"
+              "flash",
+              "air"
             ]
           },
           "sso": {

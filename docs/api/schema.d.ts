@@ -710,7 +710,7 @@ export interface paths {
         put?: never;
         /**
          * launchClient
-         * @description Issues a fresh SSO ticket after access checks. Do not prefetch, persist, log, or cache the returned URL/token. Flash requires server configuration.
+         * @description Issues a fresh SSO ticket after access checks. Do not prefetch, persist, log, or cache the returned URL/token. Flash and AIR require server configuration. AIR returns a habbo://hab?server=<host>&token=<sso> link for a launcher set to this hotel.
          */
         post: operations["launchClient"];
         delete?: never;
@@ -1267,6 +1267,7 @@ export interface components {
             color_mode: "light" | "dark";
             clients: {
                 flash_enabled: boolean;
+                air_enabled: boolean;
             };
             payments: {
                 paypal_configured: boolean;
@@ -1613,7 +1614,7 @@ export interface components {
         };
         ClientLaunch: {
             /** @enum {string} */
-            client: "nitro" | "flash";
+            client: "nitro" | "flash" | "air";
             sso: string;
             url: string;
             host?: string;
@@ -3257,7 +3258,7 @@ export interface operations {
             content: {
                 "application/json": {
                     /** @enum {string} */
-                    client?: "nitro" | "flash";
+                    client?: "nitro" | "flash" | "air";
                 };
             };
         };

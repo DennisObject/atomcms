@@ -46,6 +46,8 @@ return [
     'client' => [
         'nitro_path' => env('NITRO_CLIENT_PATH', '/client/html5/nitro-client'), // Path where the index.html is
         'flash_enabled' => env('FLASH_CLIENT_ENABLED', false),
+        // AIR launcher hand-off: habbo://hab?server=<APP_URL host>&token=<sso>.
+        'air_enabled' => env('AIR_CLIENT_ENABLED', false),
     ],
 
     'flash' => [

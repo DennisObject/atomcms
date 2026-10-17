@@ -281,6 +281,18 @@ test('game launch issues a private driver ticket and guest launch is denied', fu
     expect($ticket)->not->toBeEmpty()->and($this->member->fresh()->auth_ticket)->toBe($ticket);
 });
 
+test('air launch hands the ticket to a launcher link only when enabled', function () {
+    setSetting('findretros_enabled', '0');
+    config(['habbo.client.air_enabled' => false, 'app.url' => 'https://hotel.example']);
+    $this->actingAs($this->member)->postJson('/api/v1/client/launch', ['client' => 'air'])->assertNotFound();
+
+    config(['habbo.client.air_enabled' => true]);
+    $data = $this->postJson('/api/v1/client/launch', ['client' => 'air'])->assertOk()->assertHeader('Cache-Control', 'no-store, private')->json('data');
+    expect($data['client'])->toBe('air')
+        ->and($data['url'])->toBe('habbo://hab?server=hotel.example&token=' . rawurlencode($data['sso']))
+        ->and($this->member->fresh()->auth_ticket)->toBe($data['sso']);
+});
+
 test('explicit reaction set and remove operations are safe to repeat', function () {
     $article = WebsiteArticle::create(['user_id' => $this->member->id, 'title' => 'Repeat reactions', 'short_story' => 'Story', 'full_story' => 'A story']);
     $path = '/api/v1/articles/' . $article->slug . '/reactions/heart';
@@ -380,6 +392,7 @@ test('bootstrap exposes theme artwork and enabled integrations without credentia
     setSetting('cms_color_mode', 'dark');
     config([
         'habbo.client.flash_enabled' => true,
+        'habbo.client.air_enabled' => true,
         'habbo.paypal.mode' => 'sandbox',
         'habbo.paypal.sandbox.client_id' => 'private-paypal-client',
         'habbo.paypal.sandbox.client_secret' => 'private-paypal-secret',
@@ -390,17 +403,19 @@ test('bootstrap exposes theme artwork and enabled integrations without credentia
         ->assertJsonPath('data.assets.me_backdrop', 'https://images.example.com/backdrop.png')
         ->assertJsonPath('data.color_mode', 'dark')
         ->assertJsonPath('data.clients.flash_enabled', true)
+        ->assertJsonPath('data.clients.air_enabled', true)
         ->assertJsonPath('data.payments', ['paypal_configured' => true])
         ->assertDontSee('private-paypal-client')->assertDontSee('private-paypal-secret');
 });
 
 test('bootstrap uses light mode and keeps unavailable clients and top ups disabled', function () {
     setSetting('cms_color_mode', 'unsupported');
-    config(['habbo.client.flash_enabled' => false, 'habbo.paypal.mode' => 'sandbox', 'habbo.paypal.sandbox.client_secret' => '']);
+    config(['habbo.client.flash_enabled' => false, 'habbo.client.air_enabled' => false, 'habbo.paypal.mode' => 'sandbox', 'habbo.paypal.sandbox.client_secret' => '']);
 
     $this->getJson('/api/v1/bootstrap')->assertOk()
         ->assertJsonPath('data.color_mode', 'light')
         ->assertJsonPath('data.clients.flash_enabled', false)
+        ->assertJsonPath('data.clients.air_enabled', false)
         ->assertJsonPath('data.payments.paypal_configured', false);
 });
 
