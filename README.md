@@ -71,5 +71,6 @@ Do not run `composer setup` or `migrate:fresh` to update. See [Updating an insta
 ## More
 
 - [Documentation](docs/wiki/README.md)
+- [Headless mode](docs/wiki/10.-Headless-mode.md) - use Atom as an API for your own website
 - [Contributing](docs/wiki/0.-Contribution-guidelines.md)
 - [Credits](docs/wiki/Credits.md)

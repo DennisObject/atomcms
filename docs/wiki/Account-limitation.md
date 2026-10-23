@@ -1,5 +1,12 @@
 # Account limits
 
-Set `max_accounts_per_ip` through Housekeeping's CMS settings to the maximum number of accounts that can register from one IP address. Shared households and networks count toward the same limit.
+Limit how many accounts one IP address can register.
 
-Configure [trusted proxies](1.-Installing-Atom-CMS.md#production-configuration) before relying on this control. Test both an allowed registration and one at the limit using a disposable test database. See [registration controls](Registration-limiting.md) for disabling registration or requiring beta codes.
+1. In Housekeeping, under CMS settings, set `max_accounts_per_ip`.
+2. Set up [trusted proxies](1.-Installing-Atom-CMS.md#production-configuration) first. Without them, Atom cannot see real visitor addresses.
+
+People in the same home or network share one IP address. They count toward the same limit.
+
+Test one registration under the limit and one at the limit. Use a throwaway database.
+
+To close registration or ask for invitation codes, see [registration controls](Registration-limiting.md).

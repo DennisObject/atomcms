@@ -1,5 +1,12 @@
 # Username filtering
 
-Set `website_wordfilter_enabled=1` through Housekeeping's CMS settings to filter new usernames. Add blocked terms to `website_wordfilter`; comparisons reject matches contained within a username as well as whole-name matches.
+Block unwanted words in new usernames.
 
-Check expected allowed and blocked names before enabling a broad term, since substring matching can reject innocent names too. Existing usernames are not renamed. This CMS registration filter is separate from the emulator's in-game word filter and remains available independently of that feature.
+1. In Housekeeping, under CMS settings, set `website_wordfilter_enabled=1`.
+2. Add the blocked words to the `website_wordfilter` table.
+
+Atom rejects a username that contains a blocked word anywhere. It also rejects an exact match.
+
+Before you add a short word, test it. A short word can block good names too.
+
+Existing usernames do not change. This filter is separate from the emulator's in-game word filter. It works without it.

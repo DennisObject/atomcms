@@ -1,11 +1,19 @@
 # Registration controls
 
-## Disable registration
+## Close registration
 
-Set `disable_registration=1` through Housekeeping's CMS settings to reject new registrations. Set it back to `0` to reopen registration.
+In Housekeeping, under CMS settings, set `disable_registration=1`. New people can no longer register. Set it to `0` to open registration again.
 
-## Beta codes
+## Invitation codes (beta codes)
 
-Leave registration enabled and set `requires_beta_code=1` to require invitations. Create a row in **`website_beta_codes`**, putting a unique, hard-to-guess invitation in **`code`** and leaving **`user_id` null**. The code can be redeemed once; successful registration records the new user's ID in `user_id`.
+Use invitation codes to keep registration open for invited people only.
 
-Give each invitee a separate code. An already assigned `user_id` marks the code as used. See [account limits](Account-limitation.md) for the separate per-IP restriction.
+1. Set `requires_beta_code=1`.
+2. Add a row to the **`website_beta_codes`** table:
+   - **`code`**: a unique code that is hard to guess
+   - **`user_id`**: leave it empty (`null`)
+3. Give each person their own code.
+
+A code works once. After a successful registration, Atom saves the new user's ID in `user_id`. A code with a `user_id` is used.
+
+To limit accounts per IP address, see [account limits](Account-limitation.md).

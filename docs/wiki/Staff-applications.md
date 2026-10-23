@@ -1,9 +1,34 @@
 # Staff and team applications
 
-Authorized staff can create positions through **Housekeeping → Hotel → Open Positions**. Choose a rank or team, enter the position description, and optionally set start/end dates. Rank options come from the active emulator; team positions reference Atom's teams.
+Let players apply for a staff rank or a team.
 
-A missing start date allows applications immediately. A missing end date leaves the position open; a supplied end date closes it at that time. Dates use the application's timezone (`UTC` by default).
+## Create a position
 
-Rank applications are managed through the Staff Applications resource; team applications use the Team Applications resource. Access depends on the user's housekeeping permissions.
+1. Open **Housekeeping > Hotel > Open Positions**.
+2. Choose a rank or a team. Ranks come from your emulator. Teams come from Atom.
+3. Write the description.
+4. Optionally set a start date and an end date.
 
-For integrations, positions are stored in `website_open_positions`: `position_kind` is `rank` or `team`, with the matching `permission_id` or `team_id`, plus `description`, `apply_from` and `apply_to`. Prefer Housekeeping to direct table edits so validation and cache invalidation run.
+- No start date: people can apply now.
+- No end date: the position stays open.
+- With an end date: it closes at that time. Dates use the app time zone (`UTC` by default).
+
+## Handle applications
+
+- Rank applications: use the **Staff Applications** resource.
+- Team applications: use the **Team Applications** resource.
+
+What you can see depends on your housekeeping permissions.
+
+## For developers
+
+Positions are in `website_open_positions`:
+
+| Column | Meaning |
+| --- | --- |
+| `position_kind` | `rank` or `team` |
+| `permission_id` or `team_id` | The rank or team |
+| `description` | The text |
+| `apply_from`, `apply_to` | Start and end date |
+
+Use Housekeeping instead of editing the table. Housekeeping validates the data and clears the caches.
