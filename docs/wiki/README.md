@@ -22,6 +22,7 @@ These pages are the versioned source for Atom CMS documentation. They cover all 
 - [Two‐factor authentication](Two%E2%80%90factor-authentication.md)
 - [Username filtering](Username-filtering.md)
 - [0. Contribution guidelines](0.-Contribution-guidelines.md)
+- [Credits](Credits.md)
 
 ## Changing settings
 
