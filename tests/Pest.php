@@ -81,6 +81,18 @@ function makePackage(array $attributes = []): WebsiteShopPackage
     return $package;
 }
 
+/**
+ * A member role and an owner role, so a Plus player created with rank 7
+ * resolves to the Owner role.
+ */
+function seedPlusRoles(): void
+{
+    DB::table('roles')->insert([
+        ['id' => 1, 'slug' => 'user', 'name' => 'User', 'description' => '', 'weight' => 1, 'security_level' => 1, 'badge_code' => '', 'is_staff' => false, 'is_hidden' => false, 'created_at' => now(), 'updated_at' => now()],
+        ['id' => 9, 'slug' => 'owner', 'name' => 'Owner', 'description' => '', 'weight' => 900, 'security_level' => 7, 'badge_code' => '', 'is_staff' => true, 'is_hidden' => false, 'created_at' => now(), 'updated_at' => now()],
+    ]);
+}
+
 function grantHousekeepingPermission(string $permission, int $minRank): void
 {
     WebsiteHousekeepingPermission::query()->create([

@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Console\Commands\Concerns\ReadsStringInputs;
 use App\Services\InstallationService;
 use App\Services\OperatingMode;
 use App\Support\EnvironmentFile;
@@ -12,6 +13,8 @@ use Throwable;
 
 class AtomModeCommand extends Command
 {
+    use ReadsStringInputs;
+
     protected $signature = 'atom:mode {mode? : full or headless}
         {--frontend-url= : Origin of the independent frontend}
         {--session-domain= : Explicit cookie domain for sibling hosts}
@@ -35,7 +38,7 @@ class AtomModeCommand extends Command
         }
 
         try {
-            $values = $modes->environment((string) $this->argument('mode'), $this->option('frontend-url') ?: config('atom.frontend_url'), $this->option('session-domain') ?? config('session.domain'));
+            $values = $modes->environment($this->stringArgument('mode'), $this->stringOption('frontend-url') ?: config('atom.frontend_url'), $this->stringOption('session-domain') ?? config('session.domain'));
             if (! $installation->isComplete()) {
                 $this->error('Complete installation with atom:setup --complete before switching modes.');
 

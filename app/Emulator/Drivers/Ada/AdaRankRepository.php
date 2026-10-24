@@ -57,7 +57,8 @@ class AdaRankRepository implements RankRepository
             ->orderByDesc('id')
             ->with(['users' => fn ($query) => $query
                 ->select('players.id', 'username', 'rank', 'motto', 'look', 'hidden_staff', 'online')
-                ->when(! $includeHidden, fn ($query) => $query->where('hidden_staff', false))])
+                ->when(! $includeHidden, fn ($query) => $query->where('hidden_staff', false))
+                ->with(['permission' => fn ($query) => $this->forDisplay($query)])])
             ->get();
     }
 }

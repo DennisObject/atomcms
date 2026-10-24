@@ -51,7 +51,8 @@ final class PlusRankRepository implements RankRepository
             ->orderByDesc('weight')
             ->with(['users' => fn ($query) => $query
                 ->select('users.id', 'username', 'native_role_id', 'motto', 'look', 'hidden_staff', 'online')
-                ->when(! $includeHidden, fn ($query) => $query->where('hidden_staff', false))])
+                ->when(! $includeHidden, fn ($query) => $query->where('hidden_staff', false))
+                ->with(['permission' => fn ($query) => $this->forDisplay($query)])])
             ->get();
     }
 }

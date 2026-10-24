@@ -141,6 +141,16 @@ test('optional settings are not blocked by browser required validation', functio
         ->and($matches[0])->toContain(' required');
 });
 
+test('every setting without a default value is optional during installation', function () {
+    $settingsWithoutDefault = WebsiteSetting::query()->where('value', '')->get();
+
+    expect($settingsWithoutDefault)->not->toBeEmpty();
+
+    foreach ($settingsWithoutDefault as $setting) {
+        expect($setting->isRequiredDuringInstallation())->toBeFalse("{$setting->key} has no default value");
+    }
+});
+
 test('visiting a later step than reached redirects back to the current step', function () {
     installHotel();
     $installation = startFreshInstallation();

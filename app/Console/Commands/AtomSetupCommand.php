@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Actions\Fortify\CreateNewUser;
+use App\Console\Commands\Concerns\ReadsStringInputs;
 use App\Emulator\Contracts\RankRepository;
 use App\Models\User;
 use App\Services\InstallationSetup;
@@ -11,6 +12,8 @@ use Illuminate\Support\Facades\Artisan;
 
 class AtomSetupCommand extends Command
 {
+    use ReadsStringInputs;
+
     protected $signature = 'atom:setup {--auto=false} {--complete : Finish configuration without the browser wizard} {--settings= : JSON file of essential hotel settings} {--admin= : Existing username to promote, or username to create with protected password input}';
 
     protected $description = 'Takes you through a basic setup, allowing you to define general settings';
@@ -66,8 +69,8 @@ class AtomSetupCommand extends Command
         try {
             $setup = app(InstallationSetup::class);
             $settings = [];
-            if ($path = $this->option('settings')) {
-                $contents = file_get_contents((string) $path);
+            if ($path = $this->stringOption('settings')) {
+                $contents = file_get_contents($path);
                 if (! is_string($contents)) {
                     throw new \RuntimeException('Unable to read the settings file.');
                 }

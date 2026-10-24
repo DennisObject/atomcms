@@ -25,6 +25,7 @@ use Illuminate\Database\Eloquent\Model;
 class WebsiteSetting extends Model
 {
     public const OPTIONAL_INSTALLATION_KEYS = [
+        'discord_webhook_url',
         'flash_external_texts_file',
         'seo_description',
         'seo_keywords',

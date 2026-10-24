@@ -53,6 +53,7 @@ use App\Models\Community\Staff\WebsiteStaffApplications;
 use App\Models\User;
 use App\Services\Community\StaffService;
 use App\Services\User\UserApiService;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -315,6 +316,19 @@ test('ada roles drive the public staff listing', function () {
     expect($positions->firstWhere('id', 5)?->rank_name)->toBe('Moderator')
         ->and($positions->flatMap->users->pluck('id'))->toContain($staff->id);
 });
+
+test('ada renders staff cards with their rank details', function (string $theme) {
+    setSetting('theme', $theme);
+    setSetting('enable_caching', '0');
+    setSetting('min_staff_rank', '5');
+    $staff = User::factory()->count(2)->create(['rank' => 5, 'hidden_staff' => false]);
+
+    $this->actingAs($staff->firstOrFail())
+        ->get(route('staff.index'))
+        ->assertOk()
+        ->assertSee([$staff[0]->username, $staff[1]->username])
+        ->assertViewHas('employees', fn (Collection $positions): bool => $positions->flatMap->users->firstWhere('id', $staff[0]->id)?->permission?->rank_name === 'Moderator');
+})->with(['atom', 'dusk']);
 
 test('ada role display fields render on an article page', function () {
     setSetting('theme', 'atom');

@@ -32,5 +32,8 @@
     "dependencies": {
         "flowbite": "^4.0.2",
         "swiper": "^12.2.0"
+    },
+    "overrides": {
+        "postcss-selector-parser": "^7.1.6"
     }
 }

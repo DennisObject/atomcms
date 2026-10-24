@@ -39,7 +39,7 @@ final class PlusRank extends Rank
     /** @return Attribute<string, never> */
     protected function staffBackground(): Attribute
     {
-        return Attribute::get(fn (): string => '');
+        return Attribute::get(fn (): string => 'staff-bg.png');
     }
 
     /** @return Attribute<string, never> */

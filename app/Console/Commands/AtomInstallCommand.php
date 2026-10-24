@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Console\Commands\Concerns\ReadsStringInputs;
 use App\Emulator\EmulatorManager;
 use App\Services\OperatingMode;
 use App\Support\EnvironmentFile;
@@ -25,6 +26,8 @@ use function Laravel\Prompts\warning;
 /** @phpstan-type DatabaseConfig array{host: string, port: string, database: string, username: string, password: string} */
 class AtomInstallCommand extends Command
 {
+    use ReadsStringInputs;
+
     protected $signature = 'atom:install
         {--emulator= : Registered emulator driver key to install against}
         {--sql= : Path to a custom Arcturus base SQL dump (.sql or .sql.gz)}
@@ -55,7 +58,7 @@ class AtomInstallCommand extends Command
                 return self::FAILURE;
             }
             try {
-                $modeValues = app(OperatingMode::class)->environment('headless', $this->option('frontend-url'), $this->option('session-domain'));
+                $modeValues = app(OperatingMode::class)->environment('headless', $this->stringOption('frontend-url'), $this->stringOption('session-domain'));
             } catch (\InvalidArgumentException $exception) {
                 $this->error($exception->getMessage());
 
@@ -363,7 +366,7 @@ class AtomInstallCommand extends Command
     {
         $seeded = DB::table('website_settings')->where('key', 'theme')->value('value');
 
-        $theme = $this->option('theme');
+        $theme = $this->stringOption('theme');
 
         if ($theme !== null && ! in_array($theme, self::THEMES, true)) {
             warning("Unknown theme '{$theme}' - expected one of: " . implode(', ', self::THEMES) . '. Keeping the current theme.');
