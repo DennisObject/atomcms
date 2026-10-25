@@ -82,6 +82,34 @@ class CreateNewUser implements CreatesNewUsers
         });
     }
 
+    /**
+     * Create an account on a staff member's behalf from housekeeping. The gates
+     * a visitor passes (captcha, terms, beta codes, the per-IP cap) do not
+     * apply, while the identity rules and the hotel's starting attributes do.
+     * Attributes the model guards against mass assignment, the rank among
+     * them, are force-filled by the caller's own authority.
+     *
+     * @param  array<string, mixed>  $input
+     * @param  array<string, mixed>  $guarded
+     */
+    public function createByStaff(array $input, array $guarded = []): User
+    {
+        $validated = $this->validate($input, registration: false);
+        $password = Hash::make($validated['password']);
+
+        return $this->mutex->run($this->lockIdentifiers($validated, '127.0.0.1'), function () use ($validated, $password, $guarded): User {
+            $this->ensureIdentityIsAvailable($validated);
+
+            $user = $this->createUser($validated, $password, '127.0.0.1');
+
+            if ($guarded !== []) {
+                $user->forceFill($guarded)->save();
+            }
+
+            return $user;
+        });
+    }
+
     private function ensureRegistrationIsOpen(?string $ip): string
     {
         if (setting('disable_registration', '0') === '1') {
