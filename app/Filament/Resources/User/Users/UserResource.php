@@ -36,7 +36,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
-use Illuminate\Validation\Rules\Unique;
 
 class UserResource extends Resource
 {
@@ -66,8 +65,8 @@ class UserResource extends Resource
                                     ->label(__('filament::resources.inputs.username'))
                                     ->required()
                                     ->disabled(fn (string $operation): bool => $operation !== 'create')
-                                    ->unique(ignoreRecord: true)
-                                    ->rule(fn (): string => sprintf('regex:%s', setting('username_regex') ?: '/^[a-zA-Z0-9_.-]+$/'))
+                                    ->unique(column: fn (): string => Emulator::playerSchema()->column('username'), ignoreRecord: true)
+                                    ->rule(fn (): string => User::usernameFormatRule())
                                     ->rule(new WebsiteWordfilterRule)
                                     ->maxLength(fn (): int => Emulator::constraints()->usernameLength),
 
@@ -86,6 +85,7 @@ class UserResource extends Resource
                                     ->required(),
 
                                 DateTimePicker::make('account_created')
+                                    ->hiddenOn('create')
                                     ->native(false)
                                     ->displayFormat('Y-m-d H:i:s')
                                     ->dehydrateStateUsing(fn (User $record) => $record->account_created)
@@ -93,6 +93,7 @@ class UserResource extends Resource
                                     ->label(__('filament::resources.inputs.created_at')),
 
                                 DateTimePicker::make('last_login')
+                                    ->hiddenOn('create')
                                     ->native(false)
                                     ->displayFormat('Y-m-d H:i:s')
                                     ->dehydrateStateUsing(fn (User $record) => $record->last_login)
@@ -100,6 +101,7 @@ class UserResource extends Resource
                                     ->label(__('filament::resources.inputs.last_login')),
 
                                 DateTimePicker::make('last_online')
+                                    ->hiddenOn('create')
                                     ->native(false)
                                     ->displayFormat('Y-m-d H:i:s')
                                     ->dehydrateStateUsing(fn (User $record) => $record->last_online)
@@ -107,14 +109,17 @@ class UserResource extends Resource
                                     ->label(__('filament::resources.inputs.last_online')),
 
                                 TextInput::make('ip_register')
+                                    ->hiddenOn('create')
                                     ->label(__('filament::resources.inputs.ip_register'))
                                     ->disabled(),
 
                                 TextInput::make('ip_current')
+                                    ->hiddenOn('create')
                                     ->label(__('filament::resources.inputs.ip_current'))
                                     ->disabled(),
 
                                 TextInput::make('referral_code')
+                                    ->hiddenOn('create')
                                     ->label(__('filament::resources.inputs.referral_code'))
                                     ->disabled(),
 
@@ -173,11 +178,7 @@ class UserResource extends Resource
                                         TextInput::make('mail')
                                             ->label(__('filament::resources.inputs.email'))
                                             ->email()
-                                            // Addresses are unique per player, on the
-                                            // column the active driver keeps them in.
-                                            ->rule(fn (?User $record): Unique => $record instanceof User
-                                                ? User::uniqueRule('mail')->ignore($record)
-                                                : User::uniqueRule('mail'))
+                                            ->unique(column: fn (): string => Emulator::playerSchema()->column('mail'), ignoreRecord: true)
                                             ->maxLength(fn (): int => Emulator::constraints()->emailLength)
                                             ->required(),
                                     ])->collapsible()->collapsed(),

@@ -280,6 +280,12 @@ class User extends Authenticatable implements FilamentUser, HasName
         ];
     }
 
+    /** The hotel's username pattern, as a validation rule. */
+    public static function usernameFormatRule(): string
+    {
+        return sprintf('regex:%s', setting('username_regex') ?: '/^[a-zA-Z0-9_.-]+$/');
+    }
+
     /** A unique rule for an attribute, checked against the column the emulator stores it in. */
     public static function uniqueRule(string $attribute): Unique
     {

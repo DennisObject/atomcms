@@ -41,7 +41,8 @@ class CreateUser extends CreateRecord
     /**
      * Accounts are created through the registration action, so one a staff
      * member makes starts out like a self-registered one: the hotel's figure,
-     * motto and balances, a referral code of its own, and a hashed password.
+     * balances, a referral code of its own, and a hashed password. The form's
+     * own values and the guarded rank, team and visibility are written on top.
      *
      * @param  array<string, mixed>  $data
      */
