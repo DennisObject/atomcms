@@ -128,9 +128,6 @@ use Spatie\Activitylog\Traits\LogsActivity;
  * @property-read int|null $user_referrals_count
  *
  * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereAccountCreated($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereAccountDayOfBirth($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereAuthTicket($value)

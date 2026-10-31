@@ -5,6 +5,7 @@ namespace App\Emulator\Contracts;
 use App\Emulator\Models\Rank;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
 interface RankRepository
@@ -30,8 +31,10 @@ interface RankRepository
     /** @return array<int|string, string> */
     public function optionsBelow(int $rank): array;
 
-    /** @param Builder<Rank>|Relation<Rank, Rank, Rank> $query
-     * @return Builder<Rank>|Relation<Rank, Rank, Rank>
+    /**
+     * @param  Builder<Rank>|Relation<Rank, covariant Model, covariant mixed>  $query
+     *
+     * @return Builder<Rank>|Relation<Rank, covariant Model, covariant mixed>
      */
     public function forDisplay(Builder|Relation $query): Builder|Relation;
 
