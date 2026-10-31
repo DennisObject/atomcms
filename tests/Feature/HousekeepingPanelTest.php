@@ -171,3 +171,27 @@ test('staff cannot create an account at or above their own rank', function () {
 
     expect(User::query()->where('username', 'Overreach')->exists())->toBeFalse();
 });
+
+test('a duplicate email is reported on the field', function () {
+    grantPanelPermission('can_access_housekeeping', 6);
+    grantPanelPermission('edit_user', 6);
+
+    User::factory()->create(['mail' => 'taken@example.test']);
+
+    $this->actingAs(User::factory()->create(['rank' => 6]));
+
+    Livewire::test(CreateUser::class)
+        ->fillForm([
+            'username' => 'Duplicate',
+            'mail' => 'taken@example.test',
+            'motto' => 'Same address',
+            'gender' => 'M',
+            'password' => 'Sup3r-Secret-Pass!',
+            'password_confirmation' => 'Sup3r-Secret-Pass!',
+            'rank' => 5,
+        ])
+        ->call('create')
+        ->assertHasFormErrors(['mail']);
+
+    expect(User::query()->where('username', 'Duplicate')->exists())->toBeFalse();
+});
