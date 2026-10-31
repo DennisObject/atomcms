@@ -70,13 +70,31 @@ class CreateNewUser implements CreatesNewUsers
     /** @param array<string, mixed> $input */
     public function createAdministrator(array $input): User
     {
+        return $this->createByStaff($input, ['rank' => app(RankRepository::class)->highestRank()]);
+    }
+
+    /**
+     * Create an account on a staff member's behalf. The gates a visitor passes
+     * (captcha, terms, beta codes, the per-IP cap) do not apply, while the
+     * identity rules and the hotel's starting attributes do. Overrides are
+     * written on the caller's authority, past the model's mass-assignment guard.
+     *
+     * @param  array<string, mixed>  $input
+     * @param  array<string, mixed>  $overrides
+     */
+    public function createByStaff(array $input, array $overrides = []): User
+    {
         $validated = $this->validate($input, registration: false);
         $password = Hash::make($validated['password']);
 
-        return $this->mutex->run($this->lockIdentifiers($validated, '127.0.0.1'), function () use ($validated, $password): User {
+        return $this->mutex->run($this->lockIdentifiers($validated, '127.0.0.1'), function () use ($validated, $password, $overrides): User {
             $this->ensureIdentityIsAvailable($validated);
+
             $user = $this->createUser($validated, $password, '127.0.0.1');
-            $user->forceFill(['rank' => app(RankRepository::class)->highestRank()])->save();
+
+            if ($overrides !== []) {
+                $user->forceFill($overrides)->save();
+            }
 
             return $user;
         });
@@ -197,7 +215,7 @@ class CreateNewUser implements CreatesNewUsers
     private function validate(array $inputs, bool $registration = true): array
     {
         $rules = [
-            'username' => ['required', 'string', sprintf('regex:%s', setting('username_regex') ?: '/^[a-zA-Z0-9_.-]+$/'), 'max:' . Emulator::constraints()->usernameLength, User::uniqueRule('username'), new WebsiteWordfilterRule],
+            'username' => ['required', 'string', User::usernameFormatRule(), 'max:' . Emulator::constraints()->usernameLength, User::uniqueRule('username'), new WebsiteWordfilterRule],
             'mail' => ['required', 'string', 'email', 'max:' . Emulator::constraints()->emailLength, User::uniqueRule('mail')],
             'password' => $this->passwordRules(),
         ];
